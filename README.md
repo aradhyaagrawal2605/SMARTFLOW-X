@@ -1,8 +1,8 @@
 # SMARTFLOW-X
 SmartFlow-X is a precision fluid dispensing system with real-time pH monitoring, built for electromechanical research and chemical automation. It features an ESP32-controlled syringe pump, live sensor data capture (pH, temperature, humidity, heart rate), and a web-based dashboard for control and visualization.<br>
-<br>
 👀The theoretical least count of the pump is <br>
-🔧 Features<br>
+<br>
+__##🔧Features__<br>
 Precise 1 mL fluid dispensing using stepper motor & lead screw<br>
 <br>
 Live pH measurement after each drop (via PH4502C sensor)<br>
