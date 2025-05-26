@@ -7,7 +7,40 @@ It features an **ESP32-controlled syringe pump**, live sensor data capture (📉
 ---
 
 ### 🔬 Theoretical Least Count  
-> *(Details to be filled in here...)*
+The **least count** is the smallest volume the system can dispense in a single microstep of the stepper motor. It is calculated as follows:
+
+#### ⚙️ Parameters:
+- **Lead screw pitch**: 1 mm/rev  
+- **Stepper motor step angle**: 1.8°  
+- **Steps per revolution**: 200  
+- **Microstepping**: 16 (A4988 driver)  
+- **Syringe diameter**: 28.8 mm  
+
+#### 🧮 Calculations:
+
+1. **Microstep linear movement**  
+   `= Lead screw pitch / (steps per rev × microstepping)`  
+   `= 1 mm / (200 × 16)`  
+   `= 1 / 3200`  
+   `= 0.0003125 mm`
+
+2. **Syringe cross-sectional area**  
+   `= π × (d/2)^2`  
+   `= π × (28.8 / 2)^2`  
+   `= π × 14.4^2 ≈ 651.4 mm²`
+
+3. **Volume per microstep**  
+   `= Area × microstep movement`  
+   `= 651.4 × 0.0003125 ≈ 0.2036 mm³`  
+   *(1 mm³ = 0.001 mL)*
+
+4. **Least Count**  
+   `= 0.2036 mm³ × 0.001`  
+   `= 0.000204 mL`
+
+---
+
+✅ **Theoretical Least Count ≈ 0.000204 mL per microstep**
 
 ---
 
@@ -49,5 +82,3 @@ It features an **ESP32-controlled syringe pump**, live sensor data capture (📉
 - **Enclosure**: Wooden framework  
 
 ---
-
-Feel free to replace the **theoretical least count** placeholder or ask for section additions like usage instructions, wiring diagrams, or project video demos!
