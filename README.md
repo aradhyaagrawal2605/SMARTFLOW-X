@@ -4,15 +4,10 @@ SmartFlow-X is a precision fluid dispensing system with real-time pH monitoring,
 <br>
 🔧__Features__<br>
  - Precise 1 mL fluid dispensing using stepper motor & lead screw<br>
-<br>
  - Live pH measurement after each drop (via PH4502C sensor)<br>
-<br>
  - Real-time DHT11 sensor data logging (temperature & humidity)<br>
-<br>
  - ESP32-based control system with XAMPP backend<br>
-<br>
  - Interactive web dashboard (built with HTML, PHP, JavaScript)<br>
-<br>
  - Start/Stop control, live charting, and database integration<br>
 <br>
 📡 __Tech Stack__<br>
