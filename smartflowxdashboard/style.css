@@ -1,0 +1,235 @@
+*{
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+    font-family: "Oswald", Geneva, Tahoma, sans-serif;
+    background-color: black;
+}
+#particles-js{
+    width: 100%;
+    height: 100vh;
+}
+h1{
+    position: absolute;
+    top: 5%;
+    left:50%;
+    transform: translate(-50%,-50%);
+    color: aliceblue;
+    background: none;
+}
+#ct{
+    position: absolute;
+    top: 12%;
+    left:50%;
+    transform: translate(-50%,-50%);
+    color: aliceblue;
+    background: none;
+}
+h2{
+    background: none;
+}
+#mcp{
+    position: absolute;
+    top: 18%;
+    left:50%;
+    transform: translate(-50%,-50%);
+    color: aliceblue;
+    background: none;
+}
+h3{
+    background: none; 
+}
+#startreaction button {
+    position: absolute;
+    top: 60%;
+    left:50%;
+    transform: translate(-50%,-50%);
+    color: aliceblue; /* Set the text color to aliceblue */
+    background-color: transparent; /* Keep the background transparent */
+    border: 1px solid aliceblue; /* Add a border for visibility */
+    padding: 3px 13px; /* Add some padding for better appearance */
+    letter-spacing: 1px;
+}
+#startreaction button:hover {
+    position: absolute;
+    top: 60%;
+    left:50%;
+    transform: translate(-50%,-50%);
+    background-color: aliceblue; /* Change background to aliceblue on hover */
+    color: black; /* Change text color to black on hover */
+    border: 1px solid black; /* Change border color to black on hover */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Add a subtle shadow effect */
+    transition: all 0.3s ease; /* Smooth transition effect */
+    cursor: pointer;
+}
+#sensor-values{
+    position: absolute;
+    top: 25%;
+    left:2.5%;
+    height: 70px;
+    width: 95%;
+    background: none;
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(5px);
+    border-radius: 10px;
+    z-index: 1;
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: left; /* Center vertically */
+    flex-direction: row; /* Stack text vertically */
+    padding-left: 20px;
+    padding-right: 20px;
+}
+.value-block {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-right: 100px;
+    background: none; 
+  }
+.label,.value{
+    background: none; /* This doesn't affect text background, but ensures no additional background is applied */
+    color: rgb(248, 94, 5); /* Adjust text color for visibility */
+    font-size: 35px;
+    font-family: "Oswald", Geneva, Tahoma, sans-serif;
+  }
+
+.line {
+    fill: none;
+    stroke: blue;
+    stroke-width: 1px;
+}
+
+#acidvolume {
+    position: absolute;
+    top: 55%;
+    left: 20%;
+    transform: translate(-50%);
+    background-color: rgba(255, 255, 255, 0.05);
+    padding: 20px;
+    border-radius: 10px;
+    backdrop-filter: blur(5px);
+    text-align: center;
+    color: aliceblue;
+    font-family: "Oswald", Geneva, Tahoma, sans-serif;
+}
+
+#acidvolume label {
+    font-size: 26px;
+    color: rgb(248, 94, 5);
+    margin-bottom: 10px;
+    display: block;
+    background: none;
+}
+
+#acidvolume input {
+    padding: 8px 10px;
+    font-size: 18px;
+    border: 1px solid aliceblue;
+    background: transparent;
+    color: aliceblue;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    width: 200px;
+    text-align: center;
+    background: none;
+}
+
+#acidvolume input:focus {
+    outline: none;
+    border-color: rgb(248, 94, 5);
+    background: none;
+}
+
+#acidvolume button {
+    padding: 6px 15px;
+    font-size: 16px;
+    background-color: transparent;
+    color: aliceblue;
+    border: 1px solid aliceblue;
+    cursor: pointer;
+    border-radius: 5px;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    background: none;
+    position: absolute;
+}
+
+#acidvolume button:hover {
+    background-color: aliceblue;
+    color: black;
+    border: 1px solid black;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    background: none;
+    position: absolute;
+}
+
+form{
+    background: none;
+}
+
+#trigger_button{
+    left:50%;
+    top: 50%;
+    padding: 6px 15px;
+    font-size: 16px;
+    background-color: transparent;
+    color: aliceblue;
+    border: 1px solid aliceblue;
+    cursor: pointer;
+    border-radius: 5px;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    position: absolute;
+    transform: translate(-50%,-50%);
+}
+#trigger_button button:hover {
+    background-color: aliceblue;
+    color: black;
+    border: 1px solid black;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    position: absolute;
+    transform: translate(-50%,-50%);
+}
+/* #chart{
+    position: absolute;
+    top: 40%;
+    left: 10%;
+    transform: translate(-50% -50%);
+    background-color: aliceblue;
+} */
+
+/* Style for axes */
+/* .axis path,
+.axis line {
+  fill: none;
+  stroke: #777;
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+} */
+
+/* Style for axis text */
+/* .axis text {
+  font-size: 12px;
+  color: aliceblue;
+} */
+
+/* .grid path {
+    stroke-width: 0.5;
+    stroke: #ddd;
+  } */
+
+  /* #response-message {
+    font-size: 16px;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 5px;
+    width: 80%; /* Adjust width as needed */
+    /* max-width: 400px; /* You can set a max width */
+    /* margin-left: auto;
+    margin-right: auto;
+    background: none;
+} */
+

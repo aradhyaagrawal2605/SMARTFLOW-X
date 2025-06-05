@@ -1,0 +1,15 @@
+<button onclick="startReaction()">Start Reaction</button>
+
+<script>
+function startReaction() {
+  fetch("http://192.168.128.184/start")  // ESP32 IP
+    .then(response => {
+      if (response.ok) {
+        alert("Reaction started!");
+      } else {
+        alert("Failed to trigger reaction.");
+      }
+    })
+    .catch(error => alert("Error: " + error));
+}
+</script>

@@ -1,0 +1,30 @@
+const int stepPin = 18;
+const int dirPin = 19;
+const int controlPin = 2; // D2 on ESP32 = GPIO2
+
+void setup() {
+  pinMode(stepPin, OUTPUT);
+  pinMode(dirPin, OUTPUT);
+  pinMode(controlPin, INPUT_PULLUP); // ESP32 can use internal pull-up
+
+  digitalWrite(dirPin, HIGH); // Set direction
+  Serial.begin(115200);
+}
+
+void loop() {
+  if (digitalRead(controlPin) == LOW) {
+    Serial.println("GPIO2 is LOW - running stepper...");
+
+    for (int i = 0; i < 200; i++) {
+      digitalWrite(stepPin, HIGH);
+      delayMicroseconds(800);  // Adjust for speed
+      digitalWrite(stepPin, LOW);
+      delayMicroseconds(800);
+    }
+
+    delay(500); // delay between loops
+  } else {
+    Serial.println("GPIO2 is HIGH - motor idle.");
+    delay(200);
+  }
+}

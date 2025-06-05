@@ -1,0 +1,51 @@
+    *{
+        padding: 0px;
+        margin: 0px;
+        box-sizing: border-box;
+    }
+    body{
+        background-color:rgb(26, 15, 37) ;
+        align-items: center;
+        font-family: "Oswald",sans-serif;
+    }
+    .container{
+        max-width: 80%;
+        background-color: rgba(56, 31, 80, 0.795);
+        padding: 34px;
+        margin: auto;
+        border-radius: 60px;
+    }
+
+    .container p{
+        color: white;
+        text-align: center;
+        font-size: 20px;
+    }
+
+    .container h2{
+        color: white;
+        text-align: center;
+    }
+
+    input{
+        width: 80%;
+        margin: 11px;
+        padding: 10px;
+        margin-bottom: 80px;
+        display: block;
+        font-size: 15px;
+        font-family: "Oswald",sans-serif;
+        border-radius: 10px;
+        align-self: auto;
+    }
+
+    h3{
+        font-family: "Oswald",sans-serif;
+    }
+
+    .btn{
+        padding: 5px;
+        font-weight: bold;
+        font-family: "Oswald",sans-serif;
+        cursor:pointer;
+    }

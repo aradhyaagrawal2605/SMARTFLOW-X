@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <title>SmartFlow-X Dashboard</title>
+    <link rel="stylesheet" href="style.css?v=1.0">
+</head>
+<body>
+    <div id="particles-js">
+        <h1>SMARTFLOW-X DASHBOARD</h1>
+    </div>
+    <div id="ct">
+        <h2>Chemical Titration Reaction</h2>
+    </div>
+    <div id="mcp">
+      <h3>MCP101 Project Group 9B3</h3>
+    </div>
+    <div id="sensor-values">
+        <div class="value-block">
+          <span class="label">Temperature: </span>
+          <span class="value" id="temperature-value">--</span>
+        </div>
+        <div class="value-block">
+          <span class="label">Humidity: </span>
+          <span class="value" id="humidity-value">--</span>
+        </div>
+        <div class="value-block">
+          <span class="label">Heart Rate: </span>
+          <span class="value" id="heart-rate-value">--</span>
+        </div>
+        <div class="value-block">
+          <span class="label">pH: </span>
+          <span class="value" id="ph-value">--</span>
+        </div>
+      </div>
+      <!-- <div id="startreaction">
+        <button style="top:43%;left:50%;transform:translate(-50%,-50%);position:absolute;">START REACTION</button>
+      </div> -->
+
+      <!--Taking input for the volume of acid-->
+
+      <!-- <div id="response-message" style="margin-top: 10px;"></div> -->
+
+      <!-- script for live reading fetch -->
+      <script>
+        setInterval(() => {
+          fetch('http://localhost/smartflowxdashboard/fenchlivereading.php')
+            .then(response => response.json())
+            .then(data => {
+              if (data.message) {
+                console.log(data.message);
+              } else {
+                document.getElementById('temperature-value').textContent = data.temperature;
+                document.getElementById('humidity-value').textContent = data.humidity;
+                document.getElementById('heart-rate-value').textContent = data.heart_rate;
+                document.getElementById('ph-value').textContent = data.ph;
+              }
+            })
+            .catch(error => console.error('Error:', error));
+        }, 1000); // Update every second
+      </script>     
+
+
+      <button onclick="startReaction()" id="trigger_button">Start Reaction</button>
+      
+      <script>
+        function startReaction() {
+          // Step 1: Clear ph_readings table
+          fetch("http://localhost/smartflowxdashboard/delete_ph_readings.php")
+            .then(res => res.json())
+            .then(data => {
+              console.log(data.message);
+      
+              // Step 2: Trigger ESP32
+              return fetch("http://192.168.7.184/start");
+            })
+            .then(response => {
+              if (response.ok) {
+                alert("Reaction started and table cleared!");
+              } else {
+                alert("Failed to trigger ESP32.");
+              }
+            })
+            .catch(error => {
+              console.error("Error:", error);
+              alert("Something went wrong: " + error);
+            });
+        }
+      </script>            
+      <!-- script for charts -->
+      <!-- <div id="chart">
+        <svg width="600" height="400"></svg>
+      </div>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="chartscript.js"></script> -->
+
+    <script src="particles.js"></script>
+    <script src="app.js"></script>
+
+    
+</body>
+</html>

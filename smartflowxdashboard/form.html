@@ -1,0 +1,50 @@
+<div id="acidvolume">
+    <form id="acidVolumeForm">
+      <label for="acidVol">Enter volume of acid (in mL):</label><br>
+      <input type="number" id="acidVol" name="acidVol" min="0" step="0.1" required><br><br>
+      <button type="submit">START REACTION</button>
+    </form>
+  </div>
+<!--Form script-->
+<script>
+    // Debug: Check if script is loaded
+    console.log("Form script loaded!");
+
+    // Event listener for form submission
+    document.getElementById("acidVolumeForm").addEventListener("submit", function(event) {
+        event.preventDefault();  // Prevent default form submission
+
+        const volume = document.getElementById("acidVol").value;
+        const responseDiv = document.getElementById("response-message");
+
+        // Debug: Check if value is correctly captured
+        console.log("Volume entered: " + volume);
+
+        fetch("submitvolume.php", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: `acidVol=${encodeURIComponent(volume)}`
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          if (data.success) {
+            responseDiv.textContent = `✔ Volume received: ${data.volume} mL. Reaction started!`;
+            responseDiv.style.color = "lightgreen";
+          } else {
+            responseDiv.textContent = `✖ Error: ${data.message}`;
+            responseDiv.style.color = "salmon";
+          }
+        })
+        .catch(error => {
+          responseDiv.textContent = `✖ Failed to send request: ${error.message}`;
+          responseDiv.style.color = "salmon";
+        });
+    });
+  </script> 

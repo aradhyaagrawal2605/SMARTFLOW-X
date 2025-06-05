@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>pH vs Volume Line Chart</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .chart-container {
+            width: 80%;
+            max-width: 1000px;
+            background:white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        canvas {
+            width: 100%;
+            height: 500px;
+        }
+    </style>
+</head>
+<body>
+    <div class="chart-container">
+        <canvas id="phVolumeChart"></canvas>
+    </div>
+
+    <script>
+        // Initial sample data: pH vs Volume
+        let data = [];
+
+    function fetchChartDataAndDraw() {
+    fetch("http://localhost/smartflowxdashboard/get_ph_chart_data.php")
+    .then(res => res.json())
+    .then(dbData => {
+      data = dbData;
+      drawChart(); // call the existing chart draw function
+    })
+    .catch(err => {
+      console.error("Chart fetch error:", err);
+    });
+    }
+
+setInterval(fetchChartDataAndDraw, 2000); // fetch every 2 seconds
+
+        const canvas = document.getElementById('phVolumeChart');
+        const ctx = canvas.getContext('2d');
+
+        // Handle device pixel ratio for sharp rendering
+        const dpr = window.devicePixelRatio || 1;
+        const cssWidth = canvas.offsetWidth;
+        const cssHeight = canvas.offsetHeight;
+
+        // Set canvas drawing buffer dimensions to match device pixels
+        canvas.width = cssWidth * dpr;
+        canvas.height = cssHeight * dpr;
+
+        // Scale the context to match CSS pixels
+        ctx.scale(dpr, dpr);
+
+        // Chart dimensions and margins (in CSS pixels)
+        const margin = { top: 50, right: 30, bottom: 50, left: 50 };
+        const width = cssWidth - margin.left - margin.right;
+        const height = cssHeight - margin.top - margin.bottom;
+
+        // Y-axis range (fixed)
+        const yMin = 0;
+        const yMax = 14;
+
+        // Define titrated volume (where pH ≈ 7)
+        let exactTitratedVolume = 20;
+        for (let i = 0; i < data.length - 1; i++) {
+            if (data[i].pH <= 7 && data[i + 1].pH > 7) {
+                const fraction = (7 - data[i].pH) / (data[i + 1].pH - data[i].pH);
+                exactTitratedVolume = data[i].volume + fraction * (data[i + 1].volume - data[i].volume);
+                break;
+            }
+        }
+
+        // Function to draw the chart
+        function drawChart() {
+            // Update x-axis range based on current data
+            const xMin = Math.min(...data.map(d => d.volume));
+            const xMax = Math.max(...data.map(d => d.volume));
+
+            // Define scaling functions dynamically (in CSS pixels)
+            const xScale = (volume) => margin.left + (volume - xMin) * (width / (xMax - xMin));
+            const yScale = (pH) => margin.top + height - (pH - yMin) * (height / (yMax - yMin));
+
+            // Clear canvas
+            ctx.clearRect(0, 0, cssWidth, cssHeight);
+
+            // Draw axes
+            ctx.beginPath();
+            ctx.moveTo(margin.left, margin.top);
+            ctx.lineTo(margin.left, margin.top + height);
+            ctx.lineTo(margin.left + width, margin.top + height);
+            ctx.strokeStyle = '#000';
+            ctx.stroke();
+
+            // Draw grid lines and labels
+            ctx.font = `16px Arial`;
+            ctx.fillStyle = '#666';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            // X-axis (Volume) labels and grid
+            for (let vol = Math.floor(xMin / 5) * 5; vol <= Math.ceil(xMax / 5) * 5; vol += 5) {
+                const x = xScale(vol);
+                ctx.beginPath();
+                ctx.moveTo(x, margin.top);
+                ctx.lineTo(x, margin.top + height);
+                ctx.strokeStyle = 'rgba(0, 0, 0, 0.08)';
+                ctx.lineWidth = 0.5;
+                ctx.setLineDash([]);
+                ctx.stroke();
+                ctx.fillText(vol, x, margin.top + height + 20);
+            }
+
+            // Y-axis (pH) labels and grid
+            for (let pH = yMin; pH <= yMax; pH += 2) {
+                // const y = yScale(pH);
+                // ctx.beginPath();
+                // ctx.moveTo(margin.left, y);
+                // ctx.lineTo(margin.left + width, y);
+                // ctx.strokeStyle = 'rgba(0, 0, 0, 0.05)';
+                // ctx.stroke();
+                // ctx.textAlign = 'right';
+                // ctx.fillText(pH, margin.left - 10, y);
+                const y = yScale(pH);
+                ctx.beginPath();
+                ctx.moveTo(margin.left, y);
+                ctx.lineTo(margin.left + width, y);
+                ctx.strokeStyle = 'rgba(0, 0, 0, 0.08)';
+                ctx.lineWidth = 0.5;
+                ctx.setLineDash([]);
+                ctx.stroke();
+                ctx.textAlign = 'right';
+                ctx.fillText(pH, margin.left - 10, y);
+            }
+
+            // Axis titles
+            ctx.textAlign = 'center';
+            ctx.font = `18px Arial`;
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+            ctx.fillText('Volume (mL)', margin.left + width / 2, margin.top + height + 40);
+            ctx.save();
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText('pH', -(margin.top + height / 2), margin.left - 40);
+            ctx.restore();
+
+            // Chart title
+            ctx.textAlign = 'center';
+            ctx.font = `22px Arial`;
+            ctx.fillText('pH vs Volume Chart', cssWidth / 2, margin.top / 2);
+
+            // Split data into two regions: left and right of titrated volume
+            const leftPoints = [];
+            const rightPoints = [];
+            for (let i = 0; i < data.length; i++) {
+                const point = data[i];
+                if (point.volume <= exactTitratedVolume) {
+                    leftPoints.push(point);
+                }
+                if (point.volume >= exactTitratedVolume) {
+                    rightPoints.push(point);
+                }
+                if (i < data.length - 1 && point.volume <= exactTitratedVolume && data[i + 1].volume > exactTitratedVolume) {
+                    const fraction = (exactTitratedVolume - point.volume) / (data[i + 1].volume - point.volume);
+                    const interpolatedPH = point.pH + fraction * (data[i + 1].pH - point.pH);
+                    leftPoints.push({ volume: exactTitratedVolume, pH: interpolatedPH });
+                    rightPoints.push({ volume: exactTitratedVolume, pH: interpolatedPH });
+                }
+            }
+
+            // Draw the filled area for the left region (red fading downward)
+            ctx.beginPath();
+            ctx.moveTo(xScale(leftPoints[0].volume), margin.top + height);
+            for (let i = 0; i < leftPoints.length; i++) {
+                ctx.lineTo(xScale(leftPoints[i].volume), yScale(leftPoints[i].pH));
+            }
+            ctx.lineTo(xScale(leftPoints[leftPoints.length - 1].volume), margin.top + height);
+            ctx.closePath();
+            const leftGradient = ctx.createLinearGradient(xScale(leftPoints[0].volume), margin.top, xScale(leftPoints[0].volume), margin.top + height);
+            leftGradient.addColorStop(0, 'rgba(255, 50, 50, 0.5)'); // Opaque red at top
+            leftGradient.addColorStop(1, 'rgba(255, 50, 50, 0)');   // Transparent red at bottom
+            ctx.fillStyle = leftGradient;
+            ctx.fill();
+
+            // Draw the filled area for the right region (blue fading downward)
+            ctx.beginPath();
+            ctx.moveTo(xScale(rightPoints[0].volume), margin.top + height);
+            for (let i = 0; i < rightPoints.length; i++) {
+                ctx.lineTo(xScale(rightPoints[i].volume), yScale(rightPoints[i].pH));
+            }
+            ctx.lineTo(xScale(rightPoints[rightPoints.length - 1].volume), margin.top + height);
+            ctx.closePath();
+            const rightGradient = ctx.createLinearGradient(xScale(rightPoints[0].volume), margin.top, xScale(rightPoints[0].volume), margin.top + height);
+            rightGradient.addColorStop(0, 'rgba(30, 144, 255, 0.5)'); // Opaque blue at top
+            rightGradient.addColorStop(1, 'rgba(30, 144, 255, 0)');   // Transparent blue at bottom
+            ctx.fillStyle = rightGradient;
+            ctx.fill();
+
+            // Draw the line
+            ctx.beginPath();
+            ctx.moveTo(xScale(data[0].volume), yScale(data[0].pH));
+            for (let i = 1; i < data.length; i++) {
+                ctx.lineTo(xScale(data[i].volume), yScale(data[i].pH));
+            }
+            ctx.strokeStyle = 'rgba(0, 0, 0, 0.6)';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+
+            // Draw points
+            for (let i = 0; i < data.length; i++) {
+                const x = xScale(data[i].volume);
+                const y = yScale(data[i].pH);
+                ctx.beginPath();
+                ctx.arc(x, y, 3, 0, Math.PI * 2);
+                ctx.fillStyle = data[i].volume <= exactTitratedVolume ? 'rgba(255, 50, 50, 0.7)' : 'rgba(30, 144, 255, 0.7)';
+                ctx.fill();
+                ctx.strokeStyle = '#000';
+                ctx.stroke();
+            }
+
+            // Draw vertical line at titrated volume
+            ctx.beginPath();
+            ctx.moveTo(xScale(exactTitratedVolume), margin.top);
+            ctx.lineTo(xScale(exactTitratedVolume), margin.top + height);
+            ctx.strokeStyle = 'rgba(0, 0, 0, 0.8)';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([5, 5]);
+            ctx.stroke();
+            ctx.setLineDash([]);
+        }
+
+        // Initial draw
+        drawChart();
+
+        // Live update simulation
+        function updateData() {
+            if (data.length < 100) { // Increased limit to 100 data points
+                const lastPoint = data[data.length - 1];
+                const newVolume = lastPoint.volume + 1;
+                const newPH = lastPoint.pH < 14 ? lastPoint.pH + 0.2 : 14; // Cap pH at 14
+                data.push({ volume: newVolume, pH: newPH });
+                drawChart();
+            }
+        }
+        //COMMENT THIS LINE DOWN WHEN LIVE UPDATES ARE SET
+        // setInterval(updateData, 2500); // Update every 1 second
+
+        // Interactivity: Tooltip on hover
+        let tooltipPoint = null;
+
+        canvas.addEventListener('mousemove', (event) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = (event.clientX - rect.left);
+            const mouseY = (event.clientY - rect.top);
+
+            // Update x-axis range for scaling
+            const xMin = Math.min(...data.map(d => d.volume));
+            const xMax = Math.max(...data.map(d => d.volume));
+            const xScale = (volume) => margin.left + (volume - xMin) * (width / (xMax - xMin));
+            const yScale = (pH) => margin.top + height - (pH - yMin) * (height / (yMax - yMin));
+
+            // Find the closest data point
+            tooltipPoint = null;
+            const hoverRadius = 10; // Pixels within which to trigger tooltip
+            for (let i = 0; i < data.length; i++) {
+                const x = xScale(data[i].volume);
+                const y = yScale(data[i].pH);
+                const distance = Math.sqrt((mouseX - x) ** 2 + (mouseY - y) ** 2);
+                if (distance < hoverRadius) {
+                    tooltipPoint = data[i];
+                    break;
+                }
+            }
+
+            // Redraw chart and add tooltip if a point is hovered
+            drawChart();
+            if (tooltipPoint) {
+                const x = xScale(tooltipPoint.volume);
+                const y = yScale(tooltipPoint.pH);
+
+                // Draw tooltip background
+                const tooltipText = `Volume: ${tooltipPoint.volume} mL\npH: ${tooltipPoint.pH}`;
+                ctx.font = `12px Arial`;
+                const textMetrics = ctx.measureText(`Volume: ${tooltipPoint.volume} mL`);
+                const tooltipWidth = textMetrics.width + 10;
+                const tooltipHeight = 40;
+                const tooltipX = x + 15;
+                const tooltipY = y - tooltipHeight - 10;
+
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+                ctx.fillRect(tooltipX, tooltipY, tooltipWidth, tooltipHeight);
+
+                // Draw tooltip text
+                ctx.fillStyle = '#fff';
+                ctx.textAlign = 'left';
+                ctx.fillText(`Volume: ${tooltipPoint.volume} mL`, tooltipX + 5, tooltipY + 15);
+                ctx.fillText(`pH: ${tooltipPoint.pH}`, tooltipX + 5, tooltipY + 30);
+
+                // Highlight the hovered point
+                ctx.beginPath();
+                ctx.arc(x, y, 4, 0, Math.PI * 2);
+                ctx.fillStyle = tooltipPoint.volume <= exactTitratedVolume ? 'red' : 'blue';
+                ctx.fill();
+                ctx.strokeStyle = '#000';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            }
+        });
+
+        canvas.addEventListener('mouseout', () => {
+            tooltipPoint = null;
+            drawChart();
+        });
+    </script>
+</body>
+</html>
